@@ -1,5 +1,4 @@
 import mongoose, {Schema} from 'mongoose';
-import Album from './Album';
 
 const TrackSchema = new mongoose.Schema({
    title: {
@@ -7,7 +6,7 @@ const TrackSchema = new mongoose.Schema({
        required: true,
        validate: {
            validator: async function(value: string){
-               const trackExists = await Album.findOne({ title: value, album: this.album });
+               const trackExists = await Track.findOne({ title: value, album: this.album });
                if (trackExists) return false;
                return true;
            },
@@ -24,3 +23,6 @@ const TrackSchema = new mongoose.Schema({
         default: null,
     }
 });
+
+const Track = mongoose.model('Track', TrackSchema);
+export default Track;

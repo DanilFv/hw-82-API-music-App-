@@ -10,3 +10,9 @@ export interface IAlbumWithoutId {
   release_date: number;
   photo: string | null;
 }
+
+export interface ITrackWithoutId {
+  title: string;
+  album: Types.ObjectId;
+  duration: string;
+}
