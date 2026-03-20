@@ -20,8 +20,8 @@ const AlbumSchema = new mongoose.Schema({
         required: true,
         validate: {
            validator: async (artistId: mongoose.Schema.Types.ObjectId) => {
-               const album = await Artist.findOne(artistId);
-               if (!album) return false;
+               const artist = await Artist.findById(artistId);
+               if (!artist) return false;
                return true;
            },
             message: 'Artist does not exist',
