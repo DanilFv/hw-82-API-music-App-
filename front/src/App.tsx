@@ -1,10 +1,21 @@
 import './App.css';
+import AppToolBar from './components/UI/AppToolBar/AppToolBar.tsx';
+import {Container, Typography} from '@mui/material';
+import {Route, Routes} from 'react-router-dom';
+import Artists from './features/Artists/Artists.tsx';
 
 const App = () => {
 
   return (
     <>
+        <AppToolBar />
 
+        <Container>
+            <Routes>
+                <Route path="/" element={(<Artists />)} />
+                <Route path="*" element={(<Typography variant='h5' component='h5' sx={{ textAlign: 'center', fontWeight: 'bold' }}>Not Found Page.</Typography>)} />
+            </Routes>
+        </Container>
     </>
   )
 };

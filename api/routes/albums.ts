@@ -2,6 +2,7 @@ import express from 'express';
 import Album from '../models/Album';
 import mongoose from 'mongoose';
 import {imagesUpload} from '../multer';
+import {IAlbumWithoutId} from '../types';
 
 const albumsRouter = express.Router();
 
@@ -34,7 +35,7 @@ albumsRouter.get('/:id', async (req, res, next) => {
 });
 
 albumsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
-    const newAlbum = {
+    const newAlbum: IAlbumWithoutId = {
         title: req.body.title,
         artist: req.body.artist,
         release_date: req.body.release_date,

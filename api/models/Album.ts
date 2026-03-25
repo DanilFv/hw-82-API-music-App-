@@ -13,6 +13,7 @@ const AlbumSchema = new mongoose.Schema({
            },
            message: 'Album title is unique',
        },
+       trim: true,
    },
     artist: {
        type: Schema.Types.ObjectId,
