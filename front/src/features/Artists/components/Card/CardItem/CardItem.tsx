@@ -8,6 +8,7 @@ import {
 import type {IArtists} from '../../../../../types';
 import * as React from 'react';
 import {BASE_URL} from '../../../../../constants.ts';
+import {NavLink} from 'react-router-dom';
 
 interface Props {
     artist: IArtists;
@@ -16,7 +17,7 @@ interface Props {
 const CardItem: React.FC<Props> = ({ artist }) => {
     return (
         <Card sx={{ width: '100%' }} >
-      <CardActionArea>
+      <CardActionArea component={NavLink} to={`/albums?artistId=${artist._id}`}>
         <CardMedia
           component="img"
           width="100%"
