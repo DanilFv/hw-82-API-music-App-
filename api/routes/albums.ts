@@ -13,11 +13,13 @@ albumsRouter.get('/', async (req, res, next) => {
         let albums;
 
         if (artistId) {
-            albums = await Album.find({ artist: artistId }).populate('artist');
-            albums.sort((a, b) => b.release_date - a.release_date);
+            albums = await Album.find({ artist: artistId })
+                .populate('artist')
+                .sort({ release_date: -1 });
         } else {
-            albums = await  Album.find().populate('artist');
-            albums.sort((a, b) => b.release_date - a.release_date);
+            albums = await  Album.find()
+                .populate('artist')
+                .sort({ release_date: -1 });
         }
 
         res.send(albums);

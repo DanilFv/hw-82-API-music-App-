@@ -17,8 +17,8 @@ const AlbumCardItem: React.FC<Props> = ({ album }) => {
                 alt={album.artist.name}
             />
 
-            <Typography gutterBottom component='h6' variant='h5' sx={{ mt: '15px' }}>{album.title}</Typography>
-            <Typography component='p' variant='body1' sx={{ color: 'text.secondary' }}>{album.release_date}</Typography>
+            <Typography gutterBottom component='h6' variant='h5' sx={{ mt: '15px', px: 2, color: '#000' }}>{album.title}</Typography>
+            <Typography component='p' variant='body1' sx={{ color: 'text.secondary', px: 2, mb: 2 }}>{album.release_date}</Typography>
         </>
     );
 };

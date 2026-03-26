@@ -17,3 +17,15 @@ export interface IAlbums {
   release_date: number;
   photo: string | null;
 }
+
+export interface ITracks {
+    album: string,
+    artist: string,
+    tracks: [
+        {
+        track_number: number,
+        title: string,
+        duration: string,
+    }
+    ]
+}
