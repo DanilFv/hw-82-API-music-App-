@@ -14,7 +14,7 @@ usersRouter.post('/', async (req, res, next) => {
         user.generateAuthToken();
 
         await user.save();
-        res.send(user);
+        res.send({ message: 'User created successfully.', user });
     } catch (e) {
         if (e instanceof Error.ValidationError) {
             return res.status(400).send(e);

@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema<
     },
     password: {
         type: String,
-        required: true,
+        required: [true, 'Password is required'],
     },
     token: {
         type: String,
@@ -39,6 +39,16 @@ UserSchema.methods.checkPassword = function (password: string) {
 UserSchema.methods.generateAuthToken = function () {
     this.token = randomUUID();
 }
+
+UserSchema.path('username').validate({
+   validator: async function (this, value: string) {
+       if (!this.isModified('username')) return true;
+
+       const user = await User.findOne({ username: value });
+       return !user;
+   },
+    message: 'Username already taken. Please choose another one',
+});
 
 UserSchema.pre ('save', async function (next) {
    if (!this.isModified('password')) return;
