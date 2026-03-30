@@ -3,10 +3,11 @@ import Track from '../models/Track';
 import {IArtist, ITrackWithoutId} from '../types';
 import mongoose from 'mongoose';
 import Album from '../models/Album';
+import auth from '../middlewares/auth';
 
 const tracksRouter = express.Router();
 
-tracksRouter.get('/', async (req, res, next) => {
+tracksRouter.get('/', auth, async (req, res, next) => {
     try {
         const albumId = req.query.album as string;
         let tracks;
@@ -23,8 +24,8 @@ tracksRouter.get('/', async (req, res, next) => {
     }
 });
 
-tracksRouter.get('/:id', async (req, res, next) => {
-   const { id } = req.params;
+tracksRouter.get('/:id', auth, async (req, res, next) => {
+    const { id } = req.params;
 
    try {
        const album = await Album.findById(id).populate('artist');
@@ -33,15 +34,16 @@ tracksRouter.get('/:id', async (req, res, next) => {
           return res.status(404).send('Album not found');
        }
 
-       const tracks = await Track.find({ album: id }).sort({ track_number: 1 });
+       const tracks = await Track.find({ album: id as string }).sort({ track_number: 1 });
 
        res.send({
            artist: (album.artist as unknown as IArtist).name,
            album: album.title,
            tracks: tracks.map(track => ({
-             track_number: track.track_number,
-             title: track.title,
-             duration: track.duration,
+               _id: track._id,
+               track_number: track.track_number,
+               title: track.title,
+               duration: track.duration,
            }))
        });
    } catch (e) {

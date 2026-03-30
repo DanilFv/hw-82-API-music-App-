@@ -1,9 +1,9 @@
-import type {ITracks} from '../../../../types';
+import type {ITracksResponse} from '../../../../types';
 import {createSlice} from '@reduxjs/toolkit';
 import {fetchTracks} from './tracksThunks.ts';
 
 interface TracksState {
-    items: ITracks | null;
+    items: ITracksResponse | null;
     isLoading: boolean
 }
 

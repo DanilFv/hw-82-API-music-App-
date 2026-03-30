@@ -1,13 +1,15 @@
 import React from 'react';
 import {Box, Container, List, Paper, Typography} from '@mui/material';
-import type {ITracks} from '../../../../types';
+import type {ITracksResponse} from '../../../../types';
 import TrackCardItem from './TrackCardItem';
 
 interface Props {
-    albumData: ITracks;
+    albumData: ITracksResponse;
+    onTrackToPlay: (value: string) => void;
+    playing: string | null;
 }
 
-const TrackCard: React.FC<Props> = ({ albumData }) => {
+const TrackCard: React.FC<Props> = ({ albumData, onTrackToPlay, playing }) => {
     return (
         <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
             <Paper
@@ -34,9 +36,11 @@ const TrackCard: React.FC<Props> = ({ albumData }) => {
                 <List sx={{ p: 0 }}>
                     {albumData.tracks.map((track, index) => (
                         <TrackCardItem
-                            key={`${track.track_number}-${index}`}
+                            key={track._id}
+                            playing={playing}
                             track={track}
                             isLast={index === albumData.tracks.length - 1}
+                            clickOnTrackToPlay={() => onTrackToPlay(track._id)}
                         />
                     ))}
                 </List>

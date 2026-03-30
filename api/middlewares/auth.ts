@@ -23,3 +23,5 @@ const auth: RequestHandler = async (expressReq: Request, res: Response, next: Ne
     req.user = user;
     next();
 }
+
+export default auth;

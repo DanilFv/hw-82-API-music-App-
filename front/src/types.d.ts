@@ -18,16 +18,17 @@ export interface IAlbums {
   photo: string | null;
 }
 
-export interface ITracks {
-    album: string;
+export interface ITrackItem {
+    _id: string;
+    track_number: number;
+    title: string;
+    duration: string;
+}
+
+export interface ITracksResponse {
     artist: string;
-    tracks: [
-        {
-        track_number: number;
-        title: string;
-        duration: string;
-    }
-    ]
+    album: string;
+    tracks: ITrackItem[];
 }
 
 export interface IUser {
@@ -60,4 +61,35 @@ export interface GlobalError {
 export interface LoginMutation {
     username: string;
     password: string;
+}
+
+export interface TrackHistoryMutation {
+    track: string;
+}
+
+export interface ITrackHistory {
+    _id: string;
+    user: string;
+    track: string;
+    datetime: string;
+}
+
+export interface ITrackHistoryResponse {
+    _id: string;
+    user: string;
+    track: {
+        _id: string;
+        title: string;
+        album: {
+            _id: string;
+            title: string;
+            artist: {
+                _id: string;
+                name: string;
+            },
+            release_date: number;
+            photo: string | null;
+        }
+    };
+    datetime: string;
 }

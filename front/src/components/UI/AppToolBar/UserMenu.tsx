@@ -1,6 +1,7 @@
 import {Button, Menu, MenuItem} from '@mui/material';
 import type {IUser} from '../../../types';
 import {useState} from 'react';
+import {NavLink} from 'react-router-dom';
 
 interface Props {
     user: IUser;
@@ -19,6 +20,10 @@ const UserMenu: React.FC<Props> = ({ user }) => {
 
     return (
         <>
+            <Button type='button' component={NavLink} to={`/track_history`} color='inherit'>
+                My track History
+            </Button>
+            |
             <Button
                 type='button'
                 onClick={handleClick}
