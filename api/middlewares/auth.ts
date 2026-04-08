@@ -2,26 +2,38 @@ import {NextFunction, Request, RequestHandler, Response} from 'express';
 import {HydratedDocument} from 'mongoose';
 import {UserFields} from '../types';
 import User from '../models/User';
-
+import jwt, {TokenExpiredError} from 'jsonwebtoken';
+import config from '../config';
 
 export interface RequestWithUser extends Request {
     user: HydratedDocument<UserFields>;
 }
 
 const auth: RequestHandler = async (expressReq: Request, res: Response, next: NextFunction) => {
-    const req = expressReq as RequestWithUser;
-    const token = req.get('Authorization');
+    try {
+        const req = expressReq as RequestWithUser;
+        const jwtToken = req.cookies.token;
 
-    if (!token) {
-      return res.status(401).send('No token provided');
+        if (!jwtToken) {
+            return res.status(401).send({error: 'No token present'});
+        }
+
+        const decoded = jwt.verify(jwtToken, config.jwtSecret) as {_id: string};
+        const user = await User.findOne({_id: decoded._id, token: jwtToken});
+
+        if (!user) {
+            return res.status(401).send({error: 'Invalid token'});
+        }
+
+        req.user = user;
+        next();
+    } catch (e) {
+        if (e instanceof TokenExpiredError) {
+            return res.status(401).send({error: 'Token expired'});
+        } else {
+            return res.status(401).send({error: 'Please authenticate'});
+        }
     }
-
-    const user = await User.findOne({ token });
-
-    if (!user) return res.status(401).send('No such user');
-
-    req.user = user;
-    next();
-}
+};
 
 export default auth;

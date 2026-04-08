@@ -16,12 +16,7 @@ export const fetchTrackToHistory = createAsyncThunk<void, string, { state: RootS
         dispatch(setActiveTrack(trackId));
 
         try {
-            const token = state.users.user?.token;
-            await axiosAPI.post('/track_history', { track: trackId}, {
-                headers: {
-                    'Authorization': token
-                }
-            });
+            await axiosAPI.post('/track_history', { track: trackId});
 
         } catch (e) {
             if (isAxiosError(e) && e.response) {
@@ -32,17 +27,14 @@ export const fetchTrackToHistory = createAsyncThunk<void, string, { state: RootS
     }
 });
 
-export const fetchTrackHistory = createAsyncThunk<ITrackHistoryResponse[], void, { state: RootState }>('/track_history/getAllHistory',
-    async (_,{ getState }) => {
-    const state = getState();
-    const token = state.users.user?.token;
+export const fetchTrackHistory = createAsyncThunk<ITrackHistoryResponse[], void>('/track_history/getAllHistory',
+    async () => {
 
     try{
-        const response = await axiosAPI.get<ITrackHistoryResponse[]>('/track_history', { headers: { 'Authorization': token } });
+        const response = await axiosAPI.get<ITrackHistoryResponse[]>('/track_history');
         return response.data || [];
     } catch (e) {
         console.error('Not found', e);
         return [];
     }
-
 });

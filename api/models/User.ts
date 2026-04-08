@@ -1,9 +1,8 @@
 import mongoose, {HydratedDocument, Model} from 'mongoose';
-import bcrypt from 'bcrypt';
 import {UserFields} from '../types';
-import {randomUUID} from 'crypto';
-
-const SALT_WORK_FACTOR = 10;
+import jwt from 'jsonwebtoken';
+import config from '../config';
+import argon2 from 'argon2';
 
 interface UserMethods {
     checkPassword: (password: string) => Promise<boolean>;
@@ -28,16 +27,15 @@ const UserSchema = new mongoose.Schema<
     },
     token: {
         type: String,
-        required: true,
     }
 });
 
 UserSchema.methods.checkPassword = function (password: string) {
-    return bcrypt.compare(password, this.password);
+    return argon2.verify(this.password, password);
 };
 
 UserSchema.methods.generateAuthToken = function () {
-    this.token = randomUUID();
+    this.token = jwt.sign({_id: this._id}, config.jwtSecret, {expiresIn: '30m'});
 }
 
 UserSchema.path('username').validate({
@@ -53,15 +51,20 @@ UserSchema.path('username').validate({
 UserSchema.pre ('save', async function (next) {
    if (!this.isModified('password')) return;
 
-   const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
-   const hash = await bcrypt.hash(this.password, salt);
-
-   this.password = hash;
+   try {
+       this.password = await argon2.hash(this.password, {
+           type: argon2.argon2id,
+           memoryCost: 2 ** 16,
+           timeCost: 3,
+       });
+   } catch (e) {
+       throw new Error('Error hashing password')
+   }
 });
 
 UserSchema.set('toJSON', {
     transform: (_doc, ret) => {
-        const { password, ...rest } = ret;
+        const { password, token, ...rest } = ret;
         return rest;
     }
 });

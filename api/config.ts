@@ -5,6 +5,7 @@ const rootPath = __dirname;
 const config = {
     rootPath,
     publicPath: path.join(rootPath, 'public'),
+    jwtSecret: process.env.JWT_SECRET || 'secret',
 }
 
 export default config;
