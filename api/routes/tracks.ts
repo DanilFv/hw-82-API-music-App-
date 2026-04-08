@@ -51,7 +51,7 @@ tracksRouter.get('/:id', auth, async (req, res, next) => {
    }
 });
 
-tracksRouter.post('/', async (req, res, next) => {
+tracksRouter.post('/', auth, async (req, res, next) => {
    const newTrack: ITrackWithoutId = {
        title: req.body.title,
        album: req.body.album,
@@ -69,6 +69,36 @@ tracksRouter.post('/', async (req, res, next) => {
         }
        next(e);
    }
+});
+
+tracksRouter.delete('/:id', auth, async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        await Track.findByIdAndDelete(id);
+        res.send({ message: 'Track has been deleted successfully.' });
+    } catch (e) {
+        next(e);
+    }
+});
+
+tracksRouter.patch('/:id', auth, async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const track = await Track.findById(id);
+
+        if (!track) {
+          return res.status(404).send({ message: 'Album not found' });
+        }
+
+        track.isPublished = !track.isPublished;
+
+        await track.save();
+        res.send(track);
+    } catch (e) {
+        next(e);
+    }
 });
 
 export default tracksRouter;

@@ -3,6 +3,7 @@ import Album from '../models/Album';
 import mongoose from 'mongoose';
 import {imagesUpload} from '../multer';
 import {IAlbumWithoutId} from '../types';
+import auth from '../middlewares/auth';
 
 const albumsRouter = express.Router();
 
@@ -38,7 +39,7 @@ albumsRouter.get('/:id', async (req, res, next) => {
     }
 });
 
-albumsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
+albumsRouter.post('/', auth, imagesUpload.single('photo'), async (req, res, next) => {
     const newAlbum: IAlbumWithoutId = {
         title: req.body.title,
         artist: req.body.artist,
@@ -54,6 +55,35 @@ albumsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
             res.status(400).send(e);
             return;
         }
+        next(e);
+    }
+});
+
+albumsRouter.delete('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await Album.findByIdAndDelete(id);
+        res.send({ message: 'Album deleted successfully.' });
+    } catch (e) {
+        next(e);
+    }
+});
+
+albumsRouter.patch('/:id', auth, async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const album = await Album.findById(id);
+
+        if (!album) {
+          return res.status(404).send({ message: 'Album not found' });
+        }
+
+        album.isPublished = !album.isPublished;
+
+        await album.save();
+        res.send(album);
+    } catch (e) {
         next(e);
     }
 });

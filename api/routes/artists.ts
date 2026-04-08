@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import Artist from '../models/Artist';
 import {imagesUpload} from '../multer';
 import {IArtistDataWithoutId} from '../types';
+import auth from '../middlewares/auth';
 
 const artistsRouter = express.Router();
 
@@ -15,7 +16,7 @@ artistsRouter.get('/', async (req, res, next) => {
    }
 });
 
-artistsRouter.post('/', imagesUpload.single('photo') , async (req, res, next) => {
+artistsRouter.post('/', auth, imagesUpload.single('photo') , async (req, res, next) => {
     const artistData: IArtistDataWithoutId = {
         name: req.body.name,
         photo: req.file ? 'images/' + req.file.filename : null,
@@ -32,6 +33,36 @@ artistsRouter.post('/', imagesUpload.single('photo') , async (req, res, next) =>
            return;
        }
         next(error);
+    }
+});
+
+artistsRouter.delete('/:id', async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        await Artist.findByIdAndDelete(id);
+        res.send({ message: 'Artist has been deleted successfully.' });
+    } catch (e) {
+        next(e);
+    }
+});
+
+artistsRouter.patch('/:id', auth, async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const artist = await Artist.findById(id);
+
+        if (!artist) {
+            return res.status(404).send({message: 'Artist not found'});
+        }
+
+        artist.isPublished = !artist.isPublished;
+
+        await artist.save();
+        res.send(artist);
+    } catch (e) {
+        next(e);
     }
 });
 
