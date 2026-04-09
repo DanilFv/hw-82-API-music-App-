@@ -1,17 +1,45 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axiosAPI from '../../../../axiosAPI.ts';
-import type {RootState} from '../../../../app/store.ts';
-import type {ITracksResponse} from '../../../../types';
+import type {
+    ITrackMutation,
+    ITracksResponse,
+    ValidationError
+} from '../../../../types';
+import {isAxiosError} from 'axios';
 
-export const fetchTracks = createAsyncThunk<ITracksResponse, string, { state: RootState }>('/tracks/fetchTracks',
-    async (albumId, { getState }) => {
 
-    const token = getState().users.user?.token;
+export const fetchTracks = createAsyncThunk<ITracksResponse, string>(
+    'tracks/fetchTracks',
+    async (albumId) => {
+        const response = await axiosAPI.get<ITracksResponse>(`/tracks/${albumId}`);
+        return response.data;
+    }
+);
 
-    const response = await axiosAPI.get<ITracksResponse>(`/tracks/${albumId}`, {
-        headers: {
-            'Authorization': token
+export const fetchAddTrack = createAsyncThunk<void, ITrackMutation, { rejectValue: ValidationError }>(
+    'tracks/addTrack',
+    async (trackData, { rejectWithValue }) => {
+        try {
+            await axiosAPI.post('/tracks', trackData);
+        } catch (e) {
+            if (isAxiosError(e) && e.response && e.response.status === 400) {
+                return rejectWithValue(e.response.data as ValidationError);
+            }
+            throw e;
         }
-    });
-    return response.data;
-});
+    }
+);
+
+export const deleteTrack = createAsyncThunk<void, string>(
+  'tracks/delete',
+  async (id) => {
+    await axiosAPI.delete(`/tracks/${id}`);
+  }
+);
+
+export const toggleTrackPublished = createAsyncThunk<void, string>(
+  'tracks/togglePublished',
+  async (id) => {
+    await axiosAPI.patch(`/tracks/${id}`);
+  }
+);

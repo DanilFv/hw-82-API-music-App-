@@ -16,16 +16,14 @@ const run = async () => {
     username: 'admin',
     password: '123',
     role: 'admin',
-    token: ''
   });
   admin.generateAuthToken();
   await admin.save();
 
-   const user = new User({
+  const user = new User({
     username: 'Jone',
     password: '123',
     role: 'user',
-    token: ''
   });
   user.generateAuthToken();
   await user.save();
@@ -34,13 +32,13 @@ const run = async () => {
     {
       name: 'Eminem',
       photo: 'images/eminem.jpg',
-      description: 'Legendary rapper',
+      description: 'Legendary rapper from Detroit',
       isPublished: true,
     },
     {
       name: '50 Cent',
       photo: 'images/50cent.jpg',
-      description: 'G-Unit rapper',
+      description: 'G-Unit leader and business mogul',
       isPublished: true,
     }
   );
@@ -77,15 +75,38 @@ const run = async () => {
     { title: 'Without Me', album: eminemAlbum1!._id, duration: '4:50', track_number: 1, isPublished: true },
     { title: 'Cleanin Out My Closet', album: eminemAlbum1!._id, duration: '4:57', track_number: 2, isPublished: true },
     { title: 'Sing for the Moment', album: eminemAlbum1!._id, duration: '5:40', track_number: 3, isPublished: true },
+    { title: 'Superman', album: eminemAlbum1!._id, duration: '5:50', track_number: 4, isPublished: true },
+    { title: 'Hailies Song', album: eminemAlbum1!._id, duration: '5:20', track_number: 5, isPublished: true },
 
     { title: 'Not Afraid', album: eminemAlbum2!._id, duration: '4:08', track_number: 1, isPublished: true },
     { title: 'Love The Way You Lie', album: eminemAlbum2!._id, duration: '4:23', track_number: 2, isPublished: true },
+    { title: 'No Love', album: eminemAlbum2!._id, duration: '4:59', track_number: 3, isPublished: true },
+    { title: 'Space Bound', album: eminemAlbum2!._id, duration: '4:38', track_number: 4, isPublished: true },
+    { title: 'Cold Wind Blows', album: eminemAlbum2!._id, duration: '5:03', track_number: 5, isPublished: true },
 
     { title: 'Godzilla', album: eminemAlbum3!._id, duration: '3:30', track_number: 1, isPublished: true },
+    { title: 'Darkness', album: eminemAlbum3!._id, duration: '5:37', track_number: 2, isPublished: true },
+    { title: 'You Gon Learn', album: eminemAlbum3!._id, duration: '3:54', track_number: 3, isPublished: true },
+    { title: 'Those Kinda Nights', album: eminemAlbum3!._id, duration: '2:57', track_number: 4, isPublished: true },
+    { title: 'Unaccommodating', album: eminemAlbum3!._id, duration: '3:33', track_number: 5, isPublished: true },
 
     { title: 'In Da Club', album: fiftyAlbum1!._id, duration: '3:13', track_number: 1, isPublished: true },
+    { title: '21 Questions', album: fiftyAlbum1!._id, duration: '3:44', track_number: 2, isPublished: true },
+    { title: 'P.I.M.P.', album: fiftyAlbum1!._id, duration: '4:09', track_number: 3, isPublished: true },
+    { title: 'Many Men', album: fiftyAlbum1!._id, duration: '4:16', track_number: 4, isPublished: true },
+    { title: 'Patiently Waiting', album: fiftyAlbum1!._id, duration: '4:48', track_number: 5, isPublished: true },
+
     { title: 'Candy Shop', album: fiftyAlbum2!._id, duration: '3:29', track_number: 1, isPublished: true },
-    { title: 'Ayo Technology', album: fiftyAlbum3!._id, duration: '4:08', track_number: 1, isPublished: true }
+    { title: 'Just a Lil Bit', album: fiftyAlbum2!._id, duration: '3:57', track_number: 2, isPublished: true },
+    { title: 'Disco Inferno', album: fiftyAlbum2!._id, duration: '3:34', track_number: 3, isPublished: true },
+    { title: 'Outta Control', album: fiftyAlbum2!._id, duration: '3:21', track_number: 4, isPublished: true },
+    { title: 'Piggy Bank', album: fiftyAlbum2!._id, duration: '4:15', track_number: 5, isPublished: true },
+
+    { title: 'Ayo Technology', album: fiftyAlbum3!._id, duration: '4:08', track_number: 1, isPublished: true },
+    { title: 'I Get Money', album: fiftyAlbum3!._id, duration: '3:43', track_number: 2, isPublished: true },
+    { title: 'Straight To The Bank', album: fiftyAlbum3!._id, duration: '3:10', track_number: 3, isPublished: true },
+    { title: 'Still Will', album: fiftyAlbum3!._id, duration: '3:15', track_number: 4, isPublished: true },
+    { title: 'Ill Still Kill', album: fiftyAlbum3!._id, duration: '3:41', track_number: 5, isPublished: true }
   );
 
   await Track.create(

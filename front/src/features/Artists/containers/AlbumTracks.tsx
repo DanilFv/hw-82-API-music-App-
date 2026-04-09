@@ -30,10 +30,12 @@ const AlbumTracks = () => {
         if (id) {
             dispatch(fetchTracks(id));
         }
-    }, [dispatch]);
+    }, [dispatch, id]);
 
     const onTrackToPlay = async (id: string) => {
-      await dispatch(fetchTrackToHistory(id));
+        if (user) {
+           await dispatch(fetchTrackToHistory(id));
+        }
     };
 
     return (
@@ -41,14 +43,6 @@ const AlbumTracks = () => {
             {isLoading && <Spinner />}
             {!isLoading && tracks === null && <Typography component='h5' variant="h5">Tracks not found</Typography> }
             {tracks !== null && <TrackCard albumData={tracks} onTrackToPlay={onTrackToPlay} playing={playingTrack} />}
-            {!isLoading && !user &&
-                <Typography
-                    component='p'
-                    variant='h5'
-                    sx={{ mt: 2 }}
-                >
-                  To view albums tracks and artist details, please <strong>register</strong> or <strong>sign in</strong> to your account.
-                </Typography>}
         </>
     );
 };

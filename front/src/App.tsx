@@ -8,6 +8,9 @@ import AlbumTracks from './features/Artists/containers/AlbumTracks.tsx';
 import Register from './features/users/containers/Register.tsx';
 import Login from './features/users/containers/Login.tsx';
 import TrackHistory from './features/trackHistory/trackHistory.tsx';
+import NewArtist from './features/Artists/containers/NewArtist.tsx';
+import NewAlbum from './features/Albums/NewAlbum.tsx';
+import NewTrack from './features/Tracks/NewTrack.tsx';
 
 const App = () => {
 
@@ -24,6 +27,10 @@ const App = () => {
                 <Route path='/track_history' element={(<TrackHistory />)} />
                 <Route path='/albums' element={(<ArtistFull />)} />
                 <Route path='/albums/:id/tracks' element={(<AlbumTracks />)} />
+
+                <Route path='/artists/add-artist' element={(<NewArtist />)} />
+                <Route path='/albums/add-album' element={(<NewAlbum />)} />
+                <Route path='/tracks/add-track' element={(<NewTrack />)} />
 
 
 

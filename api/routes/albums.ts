@@ -5,24 +5,43 @@ import {imagesUpload} from '../multer';
 import {IAlbumWithoutId} from '../types';
 import auth from '../middlewares/auth';
 import permit from '../middlewares/permit';
+import User from '../models/User';
+import jwt from 'jsonwebtoken';
+import config from '../config';
 
 const albumsRouter = express.Router();
 
 albumsRouter.get('/', async (req, res, next) => {
     try {
         const artistId = req.query.artistId as string;
+        const token= req.cookies.token;
+        let isAdmin = false;
 
-        let albums;
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, config.jwtSecret) as { _id: string };
+                const user = await User.findOne({ _id: decoded._id, token });
+                if (user && user.role === 'admin') {
+                    isAdmin = true;
+                }
+            } catch (e) {
+
+            }
+        }
+
+        const criteria: any = {};
+
+        if (!isAdmin) {
+            criteria.isPublished = true;
+        }
 
         if (artistId) {
-            albums = await Album.find({ artist: artistId })
-                .populate('artist')
-                .sort({ release_date: -1 });
-        } else {
-            albums = await  Album.find()
-                .populate('artist')
-                .sort({ release_date: -1 });
+            criteria.artist = artistId;
         }
+
+        const albums = await Album.find(criteria)
+            .populate('artist')
+            .sort({ release_date: -1 });
 
         res.send(albums);
     } catch (e) {
@@ -34,6 +53,19 @@ albumsRouter.get('/:id', async (req, res, next) => {
     const { id } = req.params;
     try {
         const album = await Album.findById(id).populate('artist');
+
+        if (album && !album.isPublished) {
+            const token = req.cookies.token;
+            let isAdmin = false;
+            if (token) {
+                const decoded = jwt.verify(token, config.jwtSecret) as { _id: string };
+                const user = await User.findOne({ _id: decoded._id, token });
+                if (user?.role === 'admin') isAdmin = true;
+            }
+
+            if (!isAdmin) return res.status(404).send({ message: 'Album not found' });
+        }
+
         res.send(album);
     } catch (e) {
         next(e);
@@ -77,13 +109,16 @@ albumsRouter.patch('/:id', auth, permit('admin'), async (req, res, next) => {
         const album = await Album.findById(id);
 
         if (!album) {
-          return res.status(404).send({ message: 'Album not found' });
+            return res.status(404).send({ message: 'Album not found' });
         }
 
-        album.isPublished = !album.isPublished;
+        const updatedAlbum = await Album.findByIdAndUpdate(
+            id,
+            { isPublished: !album.isPublished },
+            { new: true }
+        );
 
-        await album.save();
-        res.send(album);
+        res.send(updatedAlbum);
     } catch (e) {
         next(e);
     }
