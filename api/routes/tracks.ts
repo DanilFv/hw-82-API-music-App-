@@ -4,6 +4,7 @@ import {IArtist, ITrackWithoutId} from '../types';
 import mongoose from 'mongoose';
 import Album from '../models/Album';
 import auth from '../middlewares/auth';
+import permit from '../middlewares/permit';
 
 const tracksRouter = express.Router();
 
@@ -71,7 +72,7 @@ tracksRouter.post('/', auth, async (req, res, next) => {
    }
 });
 
-tracksRouter.delete('/:id', auth, async (req, res, next) => {
+tracksRouter.delete('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -82,7 +83,7 @@ tracksRouter.delete('/:id', auth, async (req, res, next) => {
     }
 });
 
-tracksRouter.patch('/:id', auth, async (req, res, next) => {
+tracksRouter.patch('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
 
     try {

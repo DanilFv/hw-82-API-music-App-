@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import {imagesUpload} from '../multer';
 import {IAlbumWithoutId} from '../types';
 import auth from '../middlewares/auth';
+import permit from '../middlewares/permit';
 
 const albumsRouter = express.Router();
 
@@ -59,7 +60,7 @@ albumsRouter.post('/', auth, imagesUpload.single('photo'), async (req, res, next
     }
 });
 
-albumsRouter.delete('/:id', async (req, res, next) => {
+albumsRouter.delete('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
     try {
         await Album.findByIdAndDelete(id);
@@ -69,7 +70,7 @@ albumsRouter.delete('/:id', async (req, res, next) => {
     }
 });
 
-albumsRouter.patch('/:id', auth, async (req, res, next) => {
+albumsRouter.patch('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
 
     try {

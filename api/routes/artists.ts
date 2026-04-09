@@ -4,6 +4,7 @@ import Artist from '../models/Artist';
 import {imagesUpload} from '../multer';
 import {IArtistDataWithoutId} from '../types';
 import auth from '../middlewares/auth';
+import permit from '../middlewares/permit';
 
 const artistsRouter = express.Router();
 
@@ -36,7 +37,7 @@ artistsRouter.post('/', auth, imagesUpload.single('photo') , async (req, res, ne
     }
 });
 
-artistsRouter.delete('/:id', async (req, res, next) => {
+artistsRouter.delete('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -47,7 +48,7 @@ artistsRouter.delete('/:id', async (req, res, next) => {
     }
 });
 
-artistsRouter.patch('/:id', auth, async (req, res, next) => {
+artistsRouter.patch('/:id', auth, permit('admin'), async (req, res, next) => {
     const { id } = req.params;
 
     try {
