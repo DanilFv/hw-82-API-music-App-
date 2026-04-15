@@ -16,6 +16,8 @@ const run = async () => {
     username: 'admin',
     password: '123',
     role: 'admin',
+    displayName: 'Admin',
+    avatar: 'avatar',
   });
   admin.generateAuthToken();
   await admin.save();
@@ -24,6 +26,8 @@ const run = async () => {
     username: 'Jone',
     password: '123',
     role: 'user',
+    displayName: 'Joe',
+    avatar: 'avatar',
   });
   user.generateAuthToken();
   await user.save();

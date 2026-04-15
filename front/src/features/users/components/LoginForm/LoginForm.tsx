@@ -12,15 +12,18 @@ import {useForm} from 'react-hook-form';
 import LockOpen from '@mui/icons-material/LockOpen';
 import {Link} from 'react-router-dom';
 import type {GlobalError, LoginMutation} from '../../../../types';
+import {GoogleLogin} from '@react-oauth/google';
+import {toast} from 'react-toastify';
 
 interface Props {
     onSubmit: (data: LoginMutation) => Promise<void>;
+    googleLoginHandler: (credentials: string) => Promise<void>;
     thunkError: GlobalError | null;
     isLoading: boolean;
 }
 
 
-const RegisterForm: React.FC<Props> = ({ onSubmit, thunkError, isLoading }) => {
+const RegisterForm: React.FC<Props> = ({ onSubmit, thunkError, isLoading, googleLoginHandler }) => {
     const {register, handleSubmit, reset, formState: {errors} } = useForm<LoginMutation>({
         defaultValues: {
             username: '',
@@ -105,6 +108,17 @@ const RegisterForm: React.FC<Props> = ({ onSubmit, thunkError, isLoading }) => {
             >
               Sign in
             </Button>
+              <Box sx={{ pt: 2 }}>
+                  <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                          if (credentialResponse.credential) {
+                              googleLoginHandler(credentialResponse.credential);
+                          }
+                      }}
+                      onError={() => toast.error('Login failed')}
+                  >
+                  </GoogleLogin>
+              </Box>
             <Grid container justifyContent="flex-end">
               <Grid>
                 <Link to='/register'>

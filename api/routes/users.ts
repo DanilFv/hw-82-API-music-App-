@@ -2,6 +2,9 @@ import express from 'express';
 import {Error} from 'mongoose';
 import User from '../models/User';
 import auth, {RequestWithUser} from '../middlewares/auth';
+import {OAuth2Client} from 'google-auth-library';
+import config from '../config';
+import * as crypto from 'node:crypto';
 
 const usersRouter = express.Router();
 
@@ -30,6 +33,52 @@ usersRouter.post('/', async (req, res, next) => {
         }
 
         return next(e);
+    }
+});
+
+usersRouter.post('/google', async (req, res, next) => {
+    try {
+        if (!req.body.credential) return res.status(400).send({ error: 'Credential is required' });
+        const client = new OAuth2Client(config.clientID);
+
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: config.clientID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (!payload) return res.status(400).send({ error: 'Google login failed' });
+
+        const email = payload.email;
+        const id = payload.sub;
+        const displayName = payload.name;
+
+        if (!email) return res.status(400).send({ error: 'Not enough info from Google' });
+
+        let user = await User.findOne({ googleID: id });
+
+        if (!user) {
+            user = new User({
+                username: email,
+                password: crypto.randomUUID,
+                googleID: id,
+                displayName,
+            });
+        }
+
+        user.generateAuthToken();
+        const userSave = await  user.save();
+        res.cookie('token', userSave.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+
+        res.send({ message: 'User saved successfully.', user });
+    } catch (e) {
+        next(e);
     }
 });
 

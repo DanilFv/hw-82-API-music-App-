@@ -1,7 +1,7 @@
 import type {LoginMutation} from '../../../types';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks.ts';
 import {selectLoginError, selectLoginLoading} from '../store/usersSelectors.ts';
-import {login} from '../store/userThunks.ts';
+import {googleLogin, login} from '../store/userThunks.ts';
 import LoginForm from '../components/LoginForm/LoginForm.tsx';
 import {useNavigate} from 'react-router-dom';
 
@@ -20,9 +20,14 @@ const Login = () => {
         }
     };
 
+    const onGoogleLogin = async (credential: string) => {
+        await dispatch(googleLogin(credential)).unwrap();
+        navigate('/');
+    };
+
     return (
         <>
-            <LoginForm onSubmit={onSubmitHandler} thunkError={error ? error : null} isLoading={isLoading} />
+            <LoginForm onSubmit={onSubmitHandler} thunkError={error ? error : null} isLoading={isLoading} googleLoginHandler={onGoogleLogin} />
         </>
     );
 };

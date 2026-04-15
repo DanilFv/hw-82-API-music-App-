@@ -39,6 +39,8 @@ export interface IUser {
     username: string;
     token: string;
     role: string;
+    displayName: string;
+    avatar: string;
 }
 
 export interface RegisterMutation {
