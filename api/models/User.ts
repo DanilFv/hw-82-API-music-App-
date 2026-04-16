@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema<
         type: String,
         required: true,
         unique: true,
+        trim: true,
     },
     password: {
         type: String,
@@ -36,7 +37,8 @@ const UserSchema = new mongoose.Schema<
     },
     displayName: {
         type: String,
-        required: true,
+        required: [true, 'Display name is required'],
+        trim: true,
     },
     googleID: String,
     avatar: {

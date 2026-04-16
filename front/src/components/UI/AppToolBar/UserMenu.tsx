@@ -1,9 +1,10 @@
-import {Button, Menu, MenuItem} from '@mui/material';
+import {Avatar, Box, Button, Menu, MenuItem} from '@mui/material';
 import type {IUser} from '../../../types';
 import {useState} from 'react';
-import {NavLink} from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 import {useAppDispatch} from '../../../app/hooks.ts';
 import {logout} from '../../../features/users/store/userThunks.ts';
+import {BASE_URL} from '../../../constants.ts';
 
 interface Props {
     user: IUser;
@@ -11,6 +12,7 @@ interface Props {
 
 const UserMenu: React.FC<Props> = ({ user }) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const  [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
@@ -22,11 +24,16 @@ const UserMenu: React.FC<Props> = ({ user }) => {
     };
 
     const handleLogout = async () => {
-        dispatch(logout());
+        await dispatch(logout());
+        navigate('/');
     };
 
+    const userAvatar = user.avatar?.startsWith('http')
+    ? user.avatar
+    : `${BASE_URL}/${user.avatar}`;
+
     return (
-        <>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button type='button' component={NavLink} to={`/tracks/add-track`} color='inherit'>
                 Add track
             </Button>
@@ -51,6 +58,8 @@ const UserMenu: React.FC<Props> = ({ user }) => {
                 Hello {user.displayName || user.username}
             </Button>
 
+            <Avatar alt={user.displayName} src={userAvatar} imgProps={{ referrerPolicy: 'no-referrer' }} />
+
             <Menu
                 anchorEl={anchorEl}
                 keepMounted
@@ -59,7 +68,7 @@ const UserMenu: React.FC<Props> = ({ user }) => {
             >
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
-        </>
+        </Box>
     );
 };
 

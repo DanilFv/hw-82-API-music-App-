@@ -5,7 +5,7 @@ import {
     selectRegisterError,
     selectRegisterLoading
 } from '../store/usersSelectors.ts';
-import {register} from '../store/userThunks.ts';
+import {googleLogin, register} from '../store/userThunks.ts';
 import {useNavigate} from 'react-router-dom';
 
 const Register = () => {
@@ -21,11 +21,16 @@ const Register = () => {
         } catch (e) {
             console.log(e);
         }
-    }
+    };
+
+     const onGoogleLogin = async (credential: string) => {
+        await dispatch(googleLogin(credential)).unwrap();
+        navigate('/');
+    };
 
     return (
         <div>
-            <RegisterForm onSubmit={onSubmitHandler} isLoading={isLoading} error={error} />
+            <RegisterForm onSubmit={onSubmitHandler} isLoading={isLoading} error={error} googleLoginHandler={onGoogleLogin} />
         </div>
     );
 };

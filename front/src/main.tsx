@@ -11,17 +11,17 @@ import {GoogleOAuthProvider} from '@react-oauth/google';
 import {GOOGLE_CLIENT_ID} from './constants.ts';
 
 createRoot(document.getElementById('root')!).render(
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <Provider store={store}>
-            <PersistGate persistor={persistor}>
-                <BrowserRouter>
-                    <StrictMode>
+    <StrictMode>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <Provider store={store}>
+                <PersistGate persistor={persistor}>
+                    <BrowserRouter>
                         <CssBaseline />
                         <App />
                         <ToastContainer />
-                    </StrictMode>
-                </BrowserRouter>
-            </PersistGate>
-        </Provider>
-    </GoogleOAuthProvider>
+                    </BrowserRouter>
+                </PersistGate>
+            </Provider>
+        </GoogleOAuthProvider>
+    </StrictMode>
 )

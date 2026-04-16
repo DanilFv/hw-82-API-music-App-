@@ -70,11 +70,11 @@ export const usersSlice = createSlice({
         });
 
          builder.addCase(logout.pending, (state) => {
-            state.logoutLoading = false;
+            state.logoutLoading = true;
             state.logoutError = true;
         });
         builder.addCase(logout.fulfilled, (state) => {
-            state.loginLoading = true;
+            state.loginLoading = false;
             state.user = null;
         });
         builder.addCase(logout.rejected, (state) => {

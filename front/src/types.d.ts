@@ -46,6 +46,8 @@ export interface IUser {
 export interface RegisterMutation {
     username: string;
     password: string;
+    avatar: string | null;
+    displayName: string;
 }
 
 export interface ValidationError {

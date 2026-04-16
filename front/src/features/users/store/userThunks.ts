@@ -13,7 +13,14 @@ import {toast} from 'react-toastify';
 export const register = createAsyncThunk<IUser, RegisterMutation, {rejectValue: ValidationError}>('users/register',
     async (registerMutation, {rejectWithValue}) => {
     try {
-        const response = await axiosAPI.post<{ user: IUser, message: string }>('/users', registerMutation);
+        const formData = new FormData();
+
+        formData.append('username', registerMutation.username);
+        formData.append('password', registerMutation.password);
+        formData.append('displayName', registerMutation.displayName);
+        if (registerMutation.avatar) formData.append('avatar', registerMutation.avatar);
+
+        const response = await axiosAPI.post<{ user: IUser, message: string }>('/users', formData);
         toast.success(response.data.message);
         return response.data.user;
     } catch (e) {

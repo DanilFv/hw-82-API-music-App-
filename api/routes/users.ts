@@ -5,14 +5,17 @@ import auth, {RequestWithUser} from '../middlewares/auth';
 import {OAuth2Client} from 'google-auth-library';
 import config from '../config';
 import * as crypto from 'node:crypto';
+import {imagesUpload} from '../multer';
 
 const usersRouter = express.Router();
 
-usersRouter.post('/', async (req, res, next) => {
+usersRouter.post('/', imagesUpload.single('avatar'), async (req, res, next) => {
     try {
         const user = new User({
             username: req.body.username,
             password: req.body.password,
+            displayName: req.body.displayName,
+            avatar: req.file ? 'images/' + req.file.filename : 'images/no-avatar.png',
         });
 
         user.generateAuthToken();
@@ -53,6 +56,7 @@ usersRouter.post('/google', async (req, res, next) => {
         const email = payload.email;
         const id = payload.sub;
         const displayName = payload.name;
+        const avatar = payload.picture ? payload.picture.replace('http://', 'https://') : 'images/no-avatar.png';
 
         if (!email) return res.status(400).send({ error: 'Not enough info from Google' });
 
@@ -61,10 +65,15 @@ usersRouter.post('/google', async (req, res, next) => {
         if (!user) {
             user = new User({
                 username: email,
-                password: crypto.randomUUID,
+                password: crypto.randomUUID(),
                 googleID: id,
                 displayName,
+                avatar: avatar,
             });
+        } else {
+            if (avatar) {
+                user.avatar = avatar;
+            }
         }
 
         user.generateAuthToken();

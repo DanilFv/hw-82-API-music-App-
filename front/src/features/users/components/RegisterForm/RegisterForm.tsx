@@ -8,22 +8,28 @@ import {
     Typography
 } from '@mui/material';
 import type {RegisterMutation, ValidationError} from '../../../../types';
-import {useForm} from 'react-hook-form';
+import {Controller, useForm} from 'react-hook-form';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Link} from 'react-router-dom';
+import FileInput from '../../../../components/UI/FileInput/FileInput.tsx';
+import {GoogleLogin} from '@react-oauth/google';
+import {toast} from 'react-toastify';
 
 interface Props {
     onSubmit: (data: RegisterMutation) => Promise<void>;
+    googleLoginHandler: (credentials: string) => Promise<void>;
     error: ValidationError | null;
     isLoading: boolean;
 }
 
 
-const RegisterForm: React.FC<Props> = ({ onSubmit, error, isLoading }) => {
-    const {register, handleSubmit, reset, formState: {errors} } = useForm<RegisterMutation>({
+const RegisterForm: React.FC<Props> = ({ onSubmit, error, isLoading, googleLoginHandler }) => {
+    const {register, handleSubmit, reset, control, formState: {errors} } = useForm<RegisterMutation>({
         defaultValues: {
             username: '',
-            password: ''
+            password: '',
+            displayName: '',
+            avatar: null,
         }
     });
 
@@ -77,7 +83,6 @@ const RegisterForm: React.FC<Props> = ({ onSubmit, error, isLoading }) => {
                     helperText={errors.username?.message || getFieldErrors('username')}
                 />
               </Grid>
-
               <Grid size={12}>
                 <TextField
                   required
@@ -98,6 +103,43 @@ const RegisterForm: React.FC<Props> = ({ onSubmit, error, isLoading }) => {
                     helperText={errors.password?.message || getFieldErrors('password')}
                 />
               </Grid>
+                <Grid size={12}>
+                <TextField
+                  autoComplete="given-name"
+                  fullWidth
+                  id="displayName"
+                  label="Dispay name"
+                  autoFocus
+                  {...register('displayName', {
+                      required: 'Display name is required!',
+                      minLength: {
+                          value: 3,
+                          message: 'Minimum 3 symbols'
+                      },
+                      setValueAs: (value: string) => value.trim() ?? ''
+                  })}
+                    error={!!errors.displayName || !!getFieldErrors('displayName')}
+                    helperText={errors.displayName?.message || getFieldErrors('displayName')}
+                />
+              </Grid>
+                <Grid size={12}>
+                    <Controller
+                        name="avatar"
+                        control={control}
+                        defaultValue={null}
+                        render={({ field }) => (
+                        <FileInput
+                            name={field.name}
+                            label="Avatar"
+                            onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            field.onChange(file);
+                            }}
+                        />
+                        )}
+                    />
+                </Grid>
+
             </Grid>
             <Button
               type="submit"
@@ -114,6 +156,18 @@ const RegisterForm: React.FC<Props> = ({ onSubmit, error, isLoading }) => {
                 <Link to='/login'>
                   Already have an account? Sign in
                 </Link>
+              </Grid>
+
+                <Grid sx={{ pt: 2 }}>
+                  <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                          if (credentialResponse.credential) {
+                              googleLoginHandler(credentialResponse.credential);
+                          }
+                      }}
+                      onError={() => toast.error('Login failed')}
+                  >
+                  </GoogleLogin>
               </Grid>
             </Grid>
           </Box>
